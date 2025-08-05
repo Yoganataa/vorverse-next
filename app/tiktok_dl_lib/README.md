@@ -1,0 +1,1 @@
+Please copy the core code from the JoeanAmier/TikTokDownloader repository here.

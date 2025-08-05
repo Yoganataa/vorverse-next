@@ -1,0 +1,22 @@
+# Platform-specific configurations for YT-DLP Service
+youtube:
+  format: "best[height<=720]"
+  writesubtitles: false
+  writeautomaticsub: false
+  writeinfojson: true
+  writethumbnail: true
+
+twitter:
+  format: "best"
+  writeinfojson: true
+  writethumbnail: true
+
+facebook:
+  format: "best"
+  writeinfojson: true
+  writesubtitles: false
+
+generic:
+  format: "best"
+  writeinfojson: false
+  writethumbnail: false
