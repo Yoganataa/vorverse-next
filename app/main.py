@@ -220,7 +220,7 @@ class MediaDownloaderBot:
                         chat_id,
                         f"❌ Download failed for {url}\nError: {str(e)}"
                     )
-                except:
+                except Exception:
                     pass
                 logger.error(f"Download task failed: {url} - {e}", exc_info=True)
             

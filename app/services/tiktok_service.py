@@ -1,14 +1,14 @@
 from .base_downloader import BaseDownloader
 from ..utils.cookie_loader import CookieLoader
-from typing import Dict, Any, List
+from typing import Dict, Any
 from pathlib import Path
 import logging
 
 # Import actual classes from JoeanAmier/TikTokDownloader
 try:
-    from app.tiktok_dl_lib.setting.settings import Settings
-    from app.tiktok_dl_lib.setting.params import Parameter
-    from app.tiktok_dl_lib.extractor import Extractor
+    from app.tiktok_dl_lib.config.settings import Settings
+    from app.tiktok_dl_lib.config.parameter import Parameter
+    from app.tiktok_dl_lib.extract import Extractor
     from app.tiktok_dl_lib.downloader import Downloader
     TIKTOK_LIB_AVAILABLE = True
 except ImportError as e:
@@ -58,7 +58,7 @@ class TikTokDownloaderService(BaseDownloader):
             "split": "-",
             "folder_mode": False,
             "music": False,
-            "storage_format": "",
+            "storage_format": "csv",
             "cookie_format": "",
             "dynamic_cover": False,
             "original_cover": False,
@@ -168,18 +168,23 @@ class TikTokDownloaderService(BaseDownloader):
             
             self.logger.info(f"Starting TikTok extraction for: {url}")
             
-            # Extract media information using hybrid_extractor
-            # This is the main extraction method from JoeanAmier
-            api_data = await extractor.hybrid_extractor(url)
+            # PERBAIKAN: Gunakan method 'run' dari Extractor.
+            # Ini mungkin memerlukan penyesuaian lebih lanjut tergantung pada apa yang dikembalikan oleh 'run'.
+            # Asumsi 'run' akan mengembalikan data yang dibutuhkan oleh downloader.
+            # Tipe data yang dibutuhkan adalah list[dict].
+            api_data = await extractor.run(urls=[url], type_="detail")
             
             if not api_data:
                 raise ValueError("Failed to extract media information from TikTok")
             
             self.logger.info("TikTok extraction completed, starting download")
             
-            # Download media files using the extracted data
-            # This uses the actual downloader from JoeanAmier
-            saved_files = await downloader.download_media(api_data)
+            # PERBAIKAN: Gunakan method 'run' dari Downloader.
+            # Method 'run' akan menangani proses download secara internal dan tidak mengembalikan path file secara langsung.
+            # Anda perlu memodifikasi cara mendapatkan file yang sudah di-download.
+            # Untuk sementara, kita panggil methodnya. Path file akan berada di 'output_path'.
+            await downloader.run(data=api_data, type_="detail")
+            saved_files = [str(p) for p in Path(output_path).rglob('*') if p.is_file()]
             
             if not saved_files:
                 raise ValueError("No files were downloaded")
